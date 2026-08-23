@@ -1,254 +1,123 @@
-Northstar Portfolio Reporting
+# Dynamic Portfolio Reporting System
 
-A production-style React portfolio reporting system built for the UBS Tech Grads Program Capstone — Project 2: Portfolio Reporting.
+A production-style, real-time React portfolio management and reporting platform built for the **UBS Tech Grads Program (Capstone — Project 2: Portfolio Reporting)**.
 
-Northstar provides a consolidated wealth-management view of John Smith's Global Growth Portfolio (PF-10001), covering multi-currency cash, trade booking, FIFO cost basis, market valuation, risk analytics, benchmarking, and daily client statements.
+The system replaces static mock data with **100% free, keyless live financial market APIs** (Frankfurter European Central Bank FX rates and Yahoo Finance market price endpoints), an active financial calculation engine, **multi-account management** across global currencies (USD, EUR, GBP, CHF, INR), and an **institutional 14-column Client Wise Portfolio Statement** matching official broker statement specifications.
 
-🚀 Getting Started
-Install dependencies
+---
+
+## 🚀 Quick Start
+
+### 1. Installation
+```bash
+# Clone or navigate to project directory
+cd "d:\ubs\Imarticus project\portfolio-management"
+
+# Install dependencies (React 18, Lucide React, Vite, TypeScript)
 npm install
+```
 
-Start the development server
+### 2. Development Server
+```bash
+# Start local development server on http://localhost:3000
 npm run dev
+```
 
-Verify the project
+### 3. Production Build & Type Checking
+```bash
+# Verify production compilation
 npm run build
-npm run lint
+```
 
-📊 Business Requirements
-Requirement	Implementation
-Portfolio dashboard	Overview route with KPIs, value history, allocation, watchlist, and workflow status
-Portfolio & holdings	Holdings route with MTM values, accrued interest, cost basis, P&L, and portfolio weights
-Trade management	BUY/SELL trades, back-dated trades, oversell validation, deletion, and persisted trade history
-Cash & FX	USD, EUR, GBP, CHF, and INR balances with base-currency conversion
-Market data	Market Data route and MockMarketDataProvider with normalized latest and historical prices
-MTM & P&L	FIFO holdings, total value, unrealized P&L, realized FIFO P&L, and accrued interest
-Risk analytics	Beta, annualized volatility, Sharpe ratio, drawdown, and risk-rating presentation
-Benchmarking	Normalized comparison against NASDAQ 100, FTSE 100, and S&P 500
-Daily statement	Printable client statement with summary, holdings, cash, and reporting date
-Data integration	External/internal data-flow architecture with simulated integration statuses
-Persistence	Zustand persist middleware for trades, cash, base currency, and last update
-🏗️ Architecture
+---
 
-Northstar separates presentation, application state, financial calculations, and data access.
+## 🌐 100% Free Live API Integration (No Keys Required)
 
-UI / Pages
+| Data Feed | Provider & Endpoint | Description |
+| :--- | :--- | :--- |
+| **Foreign Exchange (FX)** | **Frankfurter API (European Central Bank)**<br>`https://api.frankfurter.dev/v2/rates?base=USD` | Free, keyless REST API fetching live spot FX rates for **USD, EUR, GBP, CHF, INR**. Includes 1-click rate sync and fallback logic. |
+| **Stock Market Quotes** | **Yahoo Finance Public CORS Feed**<br>`https://query1.finance.yahoo.com/v8/finance/chart/{symbol}` | Free public endpoints supplying live market closing prices, price changes, and historical return series for global equities (AAPL, MSFT, NVDA, SAP, ASML, SHEL, NESN, RELIANCE, etc.). |
 
-src/App.tsx
+---
 
-Contains route-level screens and presentational components.
+## 📑 8 Core Business Requirements Fulfilled
 
-Components consume derived portfolio state rather than owning financial business rules.
+1. **Client Portfolio Statement**: Institutional **Client Wise Portfolio Statement** ([ClientStatementView.tsx](file:///d:/ubs/Imarticus%20project/portfolio-management/src/components/ClientStatementView.tsx)) matching exact broker statement layouts (South Asia Securities / UBS Wealth Management style), including BO ID, Client Code, 14-column holdings grid, NAV/Equity breakdown, and last day transaction P&L.
+2. **Holdings Information**: Dynamic table showing MTM Market Value, Cost Basis (Avg Rate), Unrealized P&L, Holding Period in days, Categories (A/B/N/Z), and Beta indicators.
+3. **Manual Trade Entry**: Trade blotter and modal supporting **BUY** and **SELL** orders, back-dated trade execution dates, ticker auto-lookup, oversell validation, and cash balance impact checks.
+4. **Multi-Currency Cash Management**: Multi-currency cash balances across USD, EUR, GBP, CHF, and INR, with spot conversion into the reporting base currency.
+5. **Dynamic Mark-to-Market (MTM)**: Real-time price updates dynamically updating `Market Value = Quantity × Live Closing Price` across holdings and totals.
+6. **Portfolio Risk Analytics**: Dynamic Risk Engine computing **Portfolio Beta ($\beta$)**, **Weighted Delta ($\Delta$)**, **Sharpe Ratio**, **Annualized Volatility**, and position concentration metrics.
+7. **Market Benchmarking**: Normalized performance comparison against **NASDAQ 100 (^IXIC)**, **S&P 500 (^GSPC)**, and **FTSE 100 (^FTSE)** across 1M, 3M, 6M, and 1Y horizons.
+8. **External Data Flowchart**: Interactive Bloomberg B-PIPE and Exchange feed integration diagram ([DataFlowView.tsx](file:///d:/ubs/Imarticus%20project/portfolio-management/src/components/DataFlowView.tsx)) illustrating data ingestion, symbol normalization, valuation calculation, and client statement generation.
 
-Application State
+---
 
-src/store.ts
+## 💼 Multi-Account Support
 
-Provides the persisted Zustand portfolio store.
+Clients can manage multiple distinct sub-accounts, each with its own native currency, trade history, cash ledger, and lock/lien shares, or view a **Global Consolidated Statement**:
 
-Responsibilities include:
+- **Account #9056-01**: `USD Global Growth Portfolio` (USD)
+- **Account #9056-02**: `EUR European Tech & Opportunities` (EUR)
+- **Account #9056-03**: `GBP UK & Commonwealth Income` (GBP)
+- **Account #9056-04**: `CHF Swiss Private Wealth` (CHF)
+- **Account #9056-05**: `INR India Emerging Equities` (INR)
+- **🌐 Global Consolidated View**: Aggregates all accounts into a unified Client Statement, translating all foreign security and cash values into the selected base reporting currency.
 
-Trade booking and validation
-Cash movements
-Chronological trade ledger
-Portfolio state persistence
-Base-currency management
-Financial Engine
+---
 
-src/services.ts
+## 🧮 Financial Calculation Formulas
 
-Contains the core financial logic:
+- **Cost Amount (Cost Basis)**: $\text{Total Quantity} \times \text{Avg. Purchase Rate}$
+- **Mark-to-Market (MTM) Value**: $\text{Total Quantity} \times \text{Live Closing Price}$
+- **Unrealized Gain / Loss**: $\text{Market Value} - \text{Cost Amount}$
+- **% Gain / Loss**: $\frac{\text{Unrealized Gain/Loss}}{\text{Cost Amount}} \times 100\%$
+- **Saleable Quantity**: $\text{Total Quantity} - \text{Lock Quantity} - \text{Lien Quantity}$
+- **Net Asset Value (NAV)**: $\text{Securities Market Value} + \text{Ledger Cash Balance}$
+- **Portfolio Beta ($\beta$)**: $\frac{\sum (\text{Position Market Value}_i \times \beta_i)}{\text{Total Portfolio Securities Value}}$
+- **Sharpe Ratio**: $\frac{\text{Portfolio Annual Return} - 4.5\%}{\text{Annualized Volatility}}$
 
-FIFO lot rebuilding
-Realized P&L
-Unrealized P&L
-Market-to-market valuation
-Accrued interest
-FX conversion
-Portfolio totals
-Risk metrics
-Data Layer
+---
 
-src/data.ts
+## 🏗️ Project Architecture
 
-Provides the sample portfolio data:
+```
+portfolio-management/
+├── src/
+│   ├── components/
+│   │   ├── Header.tsx              # Top bar with Account Switcher & Base Currency Selector
+│   │   ├── Sidebar.tsx             # Main navigation sidebar
+│   │   ├── DashboardView.tsx       # Portfolio overview dashboard & allocation charts
+│   │   ├── HoldingsView.tsx        # Security holdings MTM valuation table
+│   │   ├── TradesView.tsx          # Audit-ready trade blotter & history
+│   │   ├── TradeModal.tsx          # Back-dated trade booking entry modal
+│   │   ├── CashView.tsx            # Multi-currency cash & FX exchange matrix
+│   │   ├── RiskView.tsx            # Risk score, Beta, Delta, Sharpe ratio & volatility
+│   │   ├── BenchmarksView.tsx      # Performance comparison vs NASDAQ, S&P 500, FTSE 100
+│   │   ├── DataFlowView.tsx        # Requirement 8 Bloomberg/Exchange Integration Flowchart
+│   │   └── ClientStatementView.tsx # Requirement 1 14-Column Institutional Client Statement
+│   ├── services/
+│   │   ├── marketData.ts           # Live Frankfurter FX & Yahoo Finance REST API integration
+│   │   └── financialEngine.ts      # MTM calculation, FIFO cost basis & Risk Greeks engine
+│   ├── data/
+│   │   ├── initialAccounts.ts      # Seed data for Multi-Account portfolio & statement trades
+│   │   └── initialData.ts          # Baseline holdings, cash ledgers & initial trades
+│   ├── types/
+│   │   └── index.ts                # TypeScript interfaces (ClientAccount, Holding, Trade, Risk)
+│   ├── styles/
+│   │   └── index.css               # Design system tokens, flex/grid layouts & print styles
+│   ├── App.tsx                     # Main application routing & reactive state engine
+│   └── main.tsx                    # Application entry point
+├── package.json
+└── vite.config.js
+```
 
-Security master
-Trades
-Cash balances
-FX rates
-Market Data Provider
+---
 
-src/marketDataService.ts
+## 🎓 Project Context
 
-Defines the MarketDataProvider interface and implements MockMarketDataProvider.
-
-The mock provider is deliberately isolated behind an interface so it can later be replaced with a real exchange, Bloomberg, or other market-data adapter.
-
-💰 Financial Calculations
-Market Value
-quantity × closing price
-
-Accrued Interest
-face value × coupon rate ×
-days accrued / days in coupon period
-
-Unrealized P&L
-market value − open-lot cost basis
-
-Realized P&L
-sell proceeds − FIFO cost of lots sold − allocated fee
-
-Portfolio Value
-securities market value
-+ accrued interest
-+ converted cash value
-
-Portfolio Weight
-position market value ÷ total portfolio market value
-
-FX Conversion
-amount × source-to-USD rate ÷ base-to-USD rate
-
-Beta
-covariance(portfolio returns, benchmark returns)
-÷ benchmark return variance
-
-Annualized Volatility
-daily return standard deviation × √252
-
-Sharpe Ratio
-portfolio excess return ÷ portfolio volatility
-
-🔄 Key Workflow
-Book a trade, including historical value dates.
-Validate quantity, price, and oversell conditions.
-Rebuild holdings chronologically using FIFO lots.
-Move cash in the trade currency.
-Recalculate base-currency totals using current FX rates.
-Apply normalized closing prices from the market-data provider.
-Generate portfolio analytics, including:
-MTM valuation
-Realized and unrealized P&L
-Risk metrics
-Benchmark comparisons
-Client statements
-🧩 Persistence
-
-Northstar uses Zustand's persist middleware to retain key portfolio state in localStorage.
-
-Persisted data includes:
-
-Trades
-Cash balances
-Base currency
-Last update timestamp
-
-This allows the simulated portfolio workflow to survive page refreshes during development and demonstration.
-
-📈 Supported Portfolio Features
-Portfolio Overview
-Total portfolio value
-Cash and securities valuation
-Allocation breakdown
-Value history
-Watchlist
-Workflow/integration status
-Holdings
-Position quantities
-Market values
-Accrued interest
-FIFO cost basis
-Unrealized P&L
-Portfolio weights
-Trade Management
-BUY and SELL transactions
-Historical/back-dated trades
-Positive quantity and price validation
-Oversell prevention
-Trade deletion
-Chronological persisted trade history
-Cash & FX
-
-Supported currencies:
-
-USD
-EUR
-GBP
-CHF
-INR
-
-All balances can be converted into the selected base currency.
-
-Risk & Benchmarking
-
-Portfolio analytics include:
-
-Beta
-Annualized volatility
-Sharpe ratio
-Maximum drawdown
-Risk rating
-Normalized benchmark performance
-
-Benchmarks:
-
-NASDAQ 100
-FTSE 100
-S&P 500
-Daily Statement
-
-The reporting workflow includes a printable client statement containing:
-
-Reporting date
-Portfolio summary
-Holdings
-Cash balances
-Portfolio valuation
-🔌 Data Integration Architecture
-
-The application separates market-data access from portfolio calculations through the MarketDataProvider interface.
-
-                 ┌─────────────────────┐
-                 │      React UI       │
-                 └──────────┬──────────┘
-                            │
-                 ┌──────────▼──────────┐
-                 │   Zustand Store     │
-                 └──────────┬──────────┘
-                            │
-                 ┌──────────▼──────────┐
-                 │  Financial Engine    │
-                 │  FIFO / MTM / P&L   │
-                 │  FX / Risk / Totals │
-                 └──────────┬──────────┘
-                            │
-              ┌─────────────▼─────────────┐
-              │    MarketDataProvider     │
-              └─────────────┬─────────────┘
-                            │
-                 ┌──────────▼──────────┐
-                 │ Mock Market Data    │
-                 │      Provider       │
-                 └─────────────────────┘
-
-
-The mock provider can later be replaced without coupling external market-data implementation to the UI or financial engine.
-
-🛣️ Future Enhancements
- Real Bloomberg or exchange integration behind the provider interface
- REST API and database-backed audit history
- Authentication and role-based access control
- Streaming market prices
- Scheduled daily report generation
- PDF statement generation
- Secure statement email delivery
- Full statistical risk engine backed by persisted one-year return history
-🎓 Project Context
-
-Program: UBS Tech Grads Program
-Capstone: Project 2 — Portfolio Reporting
-Portfolio: John Smith — Global Growth Portfolio
-Portfolio ID: PF-10001
-
-Northstar is designed as a production-style demonstration of how portfolio reporting can combine financial calculations, persistent application state, market data, risk analytics, and client-facing reporting within a modern React application.
+- **Program**: UBS Tech Grads Program
+- **Capstone**: Project 2 — Portfolio Reporting
+- **Client Name**: MD. BELAYET HOSSAIN / John Smith
+- **Client Code**: 9056
+- **BO ID**: 1202310005959896
