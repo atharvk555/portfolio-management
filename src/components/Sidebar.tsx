@@ -21,7 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage, apiStatu
     return (
         <aside className="sidebar">
             <div className="brand">
-                <div className="brand-mark">UBS</div>
+                <div className="brand-mark">PMS</div>
                 <div>
                     <div className="brand-title">Portfolio</div>
                     <div className="brand-sub">Reporting System</div>
@@ -58,8 +58,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage, apiStatu
                     </b>
                 </div>
                 <div className="sidebar-note">
-                    UBS Wealth Management<br />
-                    Capstone Project 2
+                    Portfolio Management<br />
+                    Reporting System
                 </div>
             </div>
         </aside>

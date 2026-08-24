@@ -32,7 +32,7 @@ export const DataFlowView: React.FC = () => {
             id: 4,
             title: "5. Client Reporting & Statement Generator",
             sub: "Dashboard UI, Risk Analytics & Daily Client Statement",
-            details: "Renders interactive portfolio dashboards, risk concentration maps, index performance benchmark comparisons, and official UBS printable Client Portfolio Statements."
+            details: "Renders interactive portfolio dashboards, risk concentration maps, index performance benchmark comparisons, and official printable Client Portfolio Statements."
         }
     ];
 

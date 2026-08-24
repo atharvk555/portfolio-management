@@ -138,14 +138,14 @@ export const ClientStatementView: React.FC<ClientStatementViewProps> = ({
                 <div style={{ textAlign: 'center', marginBottom: '16px', borderBottom: '1px solid #000', paddingBottom: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
                         <div style={{ background: '#006633', color: '#fff', fontWeight: 'bold', fontSize: '18px', padding: '2px 8px', borderRadius: '2px', letterSpacing: '1px' }}>
-                            SASL / UBS
+                            SASL
                         </div>
                         <h1 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                             SOUTH ASIA SECURITIES LTD.
                         </h1>
                     </div>
                     <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#333' }}>
-                        Dual TREC Holder (DSE-258 & CSE-004) / UBS Wealth Management Alliance
+                        Dual TREC Holder (DSE-258 & CSE-004) / Institutional Wealth Management
                     </div>
                     <div style={{ fontSize: '10px', color: '#555', marginTop: '2px' }}>
                         Nascent Tower (2nd Floor), 806/A, Agrabad C/A, Chittagong-4100
@@ -370,7 +370,7 @@ export const ClientStatementView: React.FC<ClientStatementViewProps> = ({
 
                 {/* Footer */}
                 <div style={{ marginTop: '20px', paddingTop: '10px', borderTop: '1px solid #ddd', textAlign: 'center', fontSize: '9px', color: '#777' }}>
-                    Software Solution by : UBS & E-Vision Systems • System Generated Report • Page Size: A4 Landscape
+                    Software Solution by : E-Vision Systems • System Generated Report • Page Size: A4 Landscape
                 </div>
             </div>
         </div>
