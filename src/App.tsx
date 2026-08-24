@@ -109,14 +109,39 @@ export function App() {
         }));
     }, [rawBaseHoldings, trades, livePrices]);
 
-    // Account cash balances derivation
+    // Account cash balances derivation based on trade ledger
+    const derivedAccounts = useMemo(() => {
+        const getAccountTradeCashImpact = (accId: string, curr: Currency, tradeList: Trade[]) => {
+            let cashChange = 0;
+            tradeList.forEach(t => {
+                const targetAccId = t.accountId || (t.currency === 'USD' ? '9056-01' : t.currency === 'EUR' ? '9056-02' : t.currency === 'GBP' ? '9056-03' : t.currency === 'CHF' ? '9056-04' : '9056-05');
+                if (targetAccId === accId || (!t.accountId && t.currency === curr)) {
+                    const amount = t.qty * t.price;
+                    if (t.side === 'BUY') cashChange -= amount;
+                    else if (t.side === 'SELL') cashChange += amount;
+                }
+            });
+            return cashChange;
+        };
+
+        return accounts.map(acc => {
+            const baseImpact = getAccountTradeCashImpact(acc.id, acc.currency, INITIAL_TRADES);
+            const currentImpact = getAccountTradeCashImpact(acc.id, acc.currency, trades);
+            const netDiff = currentImpact - baseImpact;
+            return {
+                ...acc,
+                availableBalance: +(acc.availableBalance + netDiff).toFixed(2)
+            };
+        });
+    }, [accounts, trades]);
+
     const accountCashBalances = useMemo(() => {
-        return accounts.map(acc => ({
+        return derivedAccounts.map(acc => ({
             currency: acc.currency,
             balance: acc.availableBalance,
             fx: fxRates[acc.currency] || 1.0
         }));
-    }, [accounts, fxRates]);
+    }, [derivedAccounts, fxRates]);
 
     // Dynamic calculation of portfolio metrics
     const portfolioMetrics = useMemo(() => {
@@ -125,7 +150,11 @@ export function App() {
 
     const handleAddTrade = (newTradeData: Omit<Trade, 'id'>) => {
         const id = Date.now();
-        const activeAccId = selectedAccountId === 'ALL' ? '9056-01' : selectedAccountId;
+        let activeAccId = selectedAccountId;
+        if (selectedAccountId === 'ALL') {
+            const matched = accounts.find(a => a.currency === newTradeData.currency);
+            activeAccId = matched ? matched.id : '9056-01';
+        }
         const newTrade: Trade = { id, accountId: activeAccId, ...newTradeData };
         setTrades(prev => [newTrade, ...prev]);
         setShowTradeModal(false);
@@ -172,7 +201,7 @@ export function App() {
                     onRefreshPrices={handleRefreshPrices}
                     onSendStatement={() => setCurrentPage('statement')}
                     apiStatus={apiStatus}
-                    accounts={accounts}
+                    accounts={derivedAccounts}
                     selectedAccountId={selectedAccountId}
                     setSelectedAccountId={setSelectedAccountId}
                 />
@@ -245,10 +274,10 @@ export function App() {
 
                     {currentPage === 'statement' && (
                         <ClientStatementView
-                            accounts={accounts}
+                            accounts={derivedAccounts}
                             selectedAccountId={selectedAccountId}
                             setSelectedAccountId={setSelectedAccountId}
-                            holdings={Object.values(ACCOUNT_HOLDINGS).flat()}
+                            holdings={derivedHoldingsRaw}
                             baseCurrency={baseCurrency}
                             fxRates={fxRates}
                             convertToBase={convertAmount}

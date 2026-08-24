@@ -40,24 +40,28 @@ export function deriveHoldingsFromTrades(
     initialHoldings: Holding[],
     trades: Trade[]
 ): Holding[] {
-    // Map of symbol -> working holding
+    // Map of accountId_symbol -> working holding
     const map = new Map<string, Holding>();
 
     // Load initial baseline
     initialHoldings.forEach(h => {
-        map.set(h.symbol, { ...h });
+        const key = `${h.accountId || '9056-01'}_${h.symbol}`;
+        map.set(key, { ...h });
     });
 
     // Sort trades chronologically ascending to apply cost basis correctly
     const sortedTrades = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     sortedTrades.forEach(t => {
-        const existing = map.get(t.symbol);
+        const accId = t.accountId || '9056-01';
+        const key = `${accId}_${t.symbol}`;
+        const existing = map.get(key);
 
         if (t.side === 'BUY') {
             if (!existing) {
-                map.set(t.symbol, {
+                map.set(key, {
                     id: t.id,
+                    accountId: accId,
                     symbol: t.symbol,
                     name: t.name || `${t.symbol} Corp.`,
                     qty: t.qty,

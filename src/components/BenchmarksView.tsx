@@ -18,6 +18,16 @@ export const BenchmarksView: React.FC<BenchmarksViewProps> = ({
     const excessNasdaq = +(currentData.portfolio - currentData.nasdaq).toFixed(1);
     const excessSp = +(currentData.portfolio - currentData.sp).toFixed(1);
 
+    const formatPct = (val: number) => {
+        if (val > 0) return `+${val}%`;
+        return `${val}%`;
+    };
+
+    const formatExcess = (excess: number, label: string) => {
+        if (excess >= 0) return `▲ +${excess} pts vs ${label}`;
+        return `▼ ${Math.abs(excess)} pts vs ${label}`;
+    };
+
     return (
         <div className="stack" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <section className="panel">
@@ -43,34 +53,34 @@ export const BenchmarksView: React.FC<BenchmarksViewProps> = ({
                     <div style={{ background: 'rgba(59,130,246,0.1)', border: '1px me var(--primary)', padding: '16px', borderRadius: '10px' }}>
                         <small style={{ color: 'var(--text-dim)', letterSpacing: '0.5px' }}>PORTFOLIO RETURN ({selectedPeriod})</small>
                         <div style={{ fontSize: '24px', fontWeight: 700, color: '#60a5fa', fontFamily: 'var(--font-mono)' }}>
-                            +{currentData.portfolio}%
+                            {formatPct(currentData.portfolio)}
                         </div>
                     </div>
 
                     <div style={{ background: 'var(--bg-dark)', border: '1px solid var(--border-color)', padding: '16px', borderRadius: '10px' }}>
                         <small style={{ color: 'var(--text-dim)', letterSpacing: '0.5px' }}>NASDAQ 100 (^IXIC)</small>
                         <div style={{ fontSize: '24px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                            +{currentData.nasdaq}%
+                            {formatPct(currentData.nasdaq)}
                         </div>
                         <span style={{ fontSize: '11px', color: excessNasdaq >= 0 ? '#10b981' : '#ef4444' }}>
-                            {excessNasdaq >= 0 ? `▲ +${excessNasdaq} pts vs NASDAQ` : `▼ ${excessNasdaq} pts`}
+                            {formatExcess(excessNasdaq, 'NASDAQ')}
                         </span>
                     </div>
 
                     <div style={{ background: 'var(--bg-dark)', border: '1px solid var(--border-color)', padding: '16px', borderRadius: '10px' }}>
                         <small style={{ color: 'var(--text-dim)', letterSpacing: '0.5px' }}>S&P 500 (^GSPC)</small>
                         <div style={{ fontSize: '24px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                            +{currentData.sp}%
+                            {formatPct(currentData.sp)}
                         </div>
                         <span style={{ fontSize: '11px', color: excessSp >= 0 ? '#10b981' : '#ef4444' }}>
-                            {excessSp >= 0 ? `▲ +${excessSp} pts vs S&P` : `▼ ${excessSp} pts`}
+                            {formatExcess(excessSp, 'S&P')}
                         </span>
                     </div>
 
                     <div style={{ background: 'var(--bg-dark)', border: '1px solid var(--border-color)', padding: '16px', borderRadius: '10px' }}>
                         <small style={{ color: 'var(--text-dim)', letterSpacing: '0.5px' }}>FTSE 100 (^FTSE)</small>
                         <div style={{ fontSize: '24px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                            +{currentData.ftse}%
+                            {formatPct(currentData.ftse)}
                         </div>
                         <span style={{ fontSize: '11px', color: '#10b981' }}>
                             ▲ Outperforming UK equities
@@ -92,7 +102,7 @@ export const BenchmarksView: React.FC<BenchmarksViewProps> = ({
                                 <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', height: '12px', borderRadius: '6px', overflow: 'hidden' }}>
                                     <div style={{ width: `${Math.min(100, (item.val / 25) * 100)}%`, height: '100%', background: item.color, borderRadius: '6px' }} />
                                 </div>
-                                <b style={{ width: '60px', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>+{item.val}%</b>
+                                <b style={{ width: '60px', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{formatPct(item.val)}</b>
                             </div>
                         ))}
                     </div>
